@@ -116,7 +116,7 @@ test.describe('Tier 2: Boundary & Corner Cases (25 Cases)', () => {
     const skeleton = page.locator('.skeleton, .loader, #loading').first();
     await expect(skeleton).toBeVisible();
   });
-
+  test('T2-F1-05: Error boundary rendering on malformed data', async ({ page }) => {
     // Setup API route to return an object for localTimeStr to trigger a render crash
     await page.route('**/api/raga/current*', async route => {
       const crashedRecommendations = {
