@@ -31,3 +31,7 @@ playwright/.cache/
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Agent files
+.agents/
+.gemini/
