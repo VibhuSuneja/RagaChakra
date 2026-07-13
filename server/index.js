@@ -32,6 +32,18 @@ app.use('/api/*', (_req, res) => {
   res.status(404).json({ error: 'API route not found.' });
 });
 
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  const path = require('path');
+  // Serve static files from the React app
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+
+  // All remaining requests return the React app, so it can handle routing
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+  });
+}
+
 // ── Database + Server ─────────────────────────────────────────────────────
 mongoose
   .connect(MONGO_URI)
