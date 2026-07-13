@@ -1,0 +1,112 @@
+{
+  "currentRecommendations": {
+    "localTimeStr": "07:30 AM",
+    "praharContext": {
+      "praharIndex": 1,
+      "praharName": "Pratham Prahar",
+      "isSandhi": true,
+      "sandhiType": "dawn",
+      "sunriseISO": "2026-07-13T00:30:00.000Z",
+      "sunsetISO": "2026-07-13T13:45:00.000Z"
+    },
+    "mbtiType": "INFP",
+    "recommendations": [
+      {
+        "raga": {
+          "_id": "60c72b2f9b1d8b2d88888801",
+          "name": "Bhairav",
+          "thaat": "Bhairav",
+          "prahar": [1],
+          "isSandhiPrakash": true,
+          "sandhiType": "dawn",
+          "tetrachord": "poorvang",
+          "rasa": ["Shanta", "Karuna"],
+          "ascendingNotes": "S r G M P d N S'",
+          "descendingNotes": "S' N d P M G r S",
+          "audioRefs": [
+            "Pandit Jasraj — Bhairav (Morning Concert)",
+            "https://www.youtube.com/results?search_query=raga+bhairav+classical"
+          ],
+          "verified": true
+        },
+        "score": 0.700,
+        "reasoning": "Dawn — Sandhi Prakash · INFP (Idealist) → Shanta, Karuna"
+      },
+      {
+        "raga": {
+          "_id": "60c72b2f9b1d8b2d88888802",
+          "name": "Bhairavi",
+          "thaat": "Bhairavi",
+          "prahar": [1, 2],
+          "isSandhiPrakash": false,
+          "sandhiType": null,
+          "tetrachord": "poorvang",
+          "rasa": ["Karuna", "Shringara"],
+          "ascendingNotes": "S r g M P d n S'",
+          "descendingNotes": "S' n d P M g r S",
+          "audioRefs": [
+            "Ustad Bade Ghulam Ali Khan — Bhairavi Thumri",
+            "https://www.youtube.com/results?search_query=raga+bhairavi+classical"
+          ],
+          "verified": true
+        },
+        "score": 0.650,
+        "reasoning": "Pratham Prahar · INFP (Idealist) → Karuna, Shringara"
+      }
+    ],
+    "astroEnabled": false
+  },
+  "ragaDetails": {
+    "60c72b2f9b1d8b2d88888801": {
+      "_id": "60c72b2f9b1d8b2d88888801",
+      "name": "Bhairav",
+      "thaat": "Bhairav",
+      "prahar": [1],
+      "isSandhiPrakash": true,
+      "sandhiType": "dawn",
+      "tetrachord": "poorvang",
+      "rasa": ["Shanta", "Karuna"],
+      "ascendingNotes": "S r G M P d N S'",
+      "descendingNotes": "S' N d P M G r S",
+      "audioRefs": [
+        "Pandit Jasraj — Bhairav (Morning Concert)",
+        "https://www.youtube.com/results?search_query=raga+bhairav+classical"
+      ],
+      "verified": true
+    },
+    "60c72b2f9b1d8b2d88888802": {
+      "_id": "60c72b2f9b1d8b2d88888802",
+      "name": "Bhairavi",
+      "thaat": "Bhairavi",
+      "prahar": [1, 2],
+      "isSandhiPrakash": false,
+      "sandhiType": null,
+      "tetrachord": "poorvang",
+      "rasa": ["Karuna", "Shringara"],
+      "ascendingNotes": "S r g M P d n S'",
+      "descendingNotes": "S' n d P M g r S",
+      "audioRefs": [
+        "Ustad Bade Ghulam Ali Khan — Bhairavi Thumri",
+        "https://www.youtube.com/results?search_query=raga+bhairavi+classical"
+      ],
+      "verified": true
+    }
+  },
+  "ipapiGeo": {
+    "ip": "103.45.201.22",
+    "city": "Mumbai",
+    "region": "Maharashtra",
+    "country_name": "India",
+    "latitude": 19.0760,
+    "longitude": 72.8777,
+    "timezone": "Asia/Kolkata"
+  },
+  "mbtiSubmit": {
+    "success": true,
+    "mbtiType": "INFP"
+  },
+  "healthCheck": {
+    "status": "healthy",
+    "timestamp": "2026-07-13T11:55:10Z"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "ragachakra-server",
+  "version": "1.0.0",
+  "description": "RagaChakra Express/Mongoose backend",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "seed": "node seed/run.js",
+    "test": "jest --testPathPattern=utils/prahar.test.js --forceExit"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.5.1",
+    "suncalc": "^1.9.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.4"
+  }
+}
