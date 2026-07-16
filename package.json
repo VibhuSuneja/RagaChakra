@@ -4,8 +4,8 @@
   "description": "Circadian Hindustani raga recommendation engine",
   "scripts": {
     "start": "node server/index.js",
-    "build": "cd client && npm install && npm run build",
-    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "build": "cd client && npm install --include=dev && npm run build",
+    "install:all": "npm install --include=dev && cd server && npm install --include=dev && cd ../client && npm install --include=dev",
     "dev": "concurrently -n SERVER,CLIENT -c cyan,magenta \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "cd server && npm run dev",
     "dev:client": "cd client && npm run dev",
