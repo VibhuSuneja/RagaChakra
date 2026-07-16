@@ -73,8 +73,11 @@ const MBTI_DESCRIPTIONS = {
   ESFP: { name: 'The Entertainer', rasa: 'Hasya (Joy)', raga: 'Bilawal' },
 };
 
+import { useUser } from '../context/UserContext';
+
 export default function MBTICapture({ onSave }) {
   const navigate = useNavigate();
+  const { setMbti } = useUser();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({ ie: '', sn: '', tf: '', jp: '' });
   const [direction, setDirection] = useState(1);
@@ -94,7 +97,7 @@ export default function MBTICapture({ onSave }) {
     if (!cid) {
       cid = generateUUID();
     }
-    localStorage.setItem('ragachakra_mbti', mbti);
+    setMbti(mbti);
     localStorage.setItem('ragachakra_client_id', cid);
 
     const rawBaseUrl = import.meta.env.VITE_API_URL || '';
