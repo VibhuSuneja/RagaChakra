@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
+import YouTubeEmbed from './YouTubeEmbed';
+import { ArrowRight } from 'lucide-react';
 
 export default function RagaDetail() {
   const { id } = useParams();
   const [raga, setRaga] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const recommendation = state?.recommendation;
 
   // Format prahar display (e.g., [1, 2] -> "Prahar 1, 2")
   const formatPrahar = (p) => {
@@ -154,7 +160,7 @@ export default function RagaDetail() {
         {raga.audioRefs && raga.audioRefs.length > 0 && (
           <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '1.5rem' }}>
             <h4 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>References & Recordings</h4>
-            <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <ul style={{ listStyleType: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: 0, margin: 0 }}>
               {raga.audioRefs.map((ref, idx) => {
                 const isUrl = typeof ref === 'string' && (ref.startsWith('http://') || ref.startsWith('https://'));
                 return (
@@ -173,6 +179,18 @@ export default function RagaDetail() {
             </ul>
           </div>
         )}
+
+        <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)', paddingTop: '1.5rem', textAlign: 'center' }}>
+          <button 
+            className="btn btn-primary"
+            style={{ padding: 'var(--space-4)', fontSize: 'var(--text-xl)', width: '100%', maxWidth: '400px', justifyContent: 'center', margin: '0 auto' }}
+            onClick={() => {
+              navigate('/ritual', { state: { recommendation: recommendation || { raga, score: 0.9, reasoning: 'Direct navigation' } } });
+            }}
+          >
+            Begin Ritual <ArrowRight size={24} style={{ marginLeft: 'var(--space-2)' }}/>
+          </button>
+        </div>
       </div>
     </div>
   );

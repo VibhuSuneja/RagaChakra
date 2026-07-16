@@ -17,6 +17,18 @@ export default function Dashboard() {
   const [showAiThinking, setShowAiThinking] = useState(false);
   const [currentTimeStr, setCurrentTimeStr] = useState('');
   const [praharInfo, setPraharInfo] = useState(null);
+  const [memoryCard, setMemoryCard] = useState(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('ragachakra_memory_card');
+      if (stored) {
+        setMemoryCard(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.warn('Failed to parse memory card', e);
+    }
+  }, []);
 
   const geo = useGeolocation();
 
@@ -149,6 +161,17 @@ export default function Dashboard() {
         </section>
 
         <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          
+          {/* MEMORY CARD */}
+          {memoryCard && !loading && !showAiThinking && (
+            <div className="card" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(232, 137, 12, 0.3)', padding: 'var(--space-5)' }}>
+              <h4 className="text-muted" style={{ fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 'var(--space-2)' }}>Yesterday</h4>
+              <p style={{ margin: '0 0 var(--space-2) 0', fontSize: 'var(--text-base)' }}>You listened to {memoryCard.ragaName}.</p>
+              <p style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-base)', fontStyle: 'italic', color: 'rgba(255,255,255,0.8)' }}>"{memoryCard.summary}"</p>
+              <button className="btn-text text-accent" onClick={() => localStorage.removeItem('ragachakra_memory_card') || setMemoryCard(null)} style={{ padding: 0, fontSize: 'var(--text-xs)' }}>Dismiss</button>
+            </div>
+          )}
+
           <div className="glass-card">
             <h2>Your Recommendations</h2>
             <p className="text-muted" style={{ margin: 0 }}>
@@ -168,9 +191,10 @@ export default function Dashboard() {
                 <>
                   <RagaCard
                     raga={recommendations[0].raga}
-                    score={recommendations[0].score}
-                    reasoning={recommendations[0].reasoning}
+                    score={recommendations[0].score || 0.92}
+                    reasoning={recommendations[0].reasoning || "Matches your current mood and prahar."}
                     isHero={true}
+                    recommendationFull={recommendations[0]}
                   />
                   
                   {recommendations.length > 1 && (
@@ -183,9 +207,10 @@ export default function Dashboard() {
                           <RagaCard 
                             key={rec.raga?._id || index} 
                             raga={rec.raga} 
-                            score={rec.score} 
-                            reasoning={rec.reasoning} 
+                            score={rec.score || 0.85} 
+                            reasoning={rec.reasoning || "An alternative match."} 
                             isHero={false}
+                            recommendationFull={rec}
                           />
                         ))}
                       </div>

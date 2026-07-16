@@ -1,79 +1,73 @@
 # RagaChakra
 
-> **An AI Ritual Companion for Indian Classical Music.**
+> **An AI Ritual Companion for Indian Classical Music**
 
-RagaChakra is a time-aware, emotionally intelligent companion that helps users discover the right raga at the exact right moment. It uses a **Hybrid AI Architecture** to combine the deterministic precision of classical music theory (Prahars, Thaats, Rasa) with the poetic, contextual reasoning of LLMs.
+RagaChakra is not a streaming app or a recommendation engine. It is a guide. It takes the ancient science of Indian Classical Music—where specific scales (Ragas) are prescribed for specific times of day (Prahars) and emotions (Rasas)—and uses AI to translate that wisdom into a personal, emotional ritual.
 
-This is not a music player. It is a guide to listening rituals.
+## The Problem
+Indian Classical Music is intimidating. New listeners don't know where to start, what to listen to, or how to listen to it. Most recommendation engines suggest music based on acoustic similarities or popularity. RagaChakra recommends music based on **circadian rhythm and emotional state**.
 
-## 🏗 Architecture
+## Why AI?
+A traditional rule engine can calculate the solar time (Prahar) and filter ragas based on time rules. However, music is emotional. 
+RagaChakra uses a **Hybrid AI Pipeline**:
+1. **Rule Engine (Deterministic):** Calculates exact solar time based on the user's geolocation and filters the database for ragas strictly permitted for this window.
+2. **LLM (Gemini 2.5 Flash):** Analyzes the user's current emotional state (e.g. "Overwhelmed") and psychological profile (MBTI), selects the most healing raga from the deterministic shortlist, and generates a personalized, timed listening ritual.
 
-```mermaid
-graph TD
-    Client[Client React App]
-    subgraph Server [Node.js / Express]
-        RuleEngine[Rule Engine\nprahar.js + ranking.js]
-        Gemini[Gemini 2.5 Flash]
-    end
-    DB[(MongoDB)]
+This architecture ensures the music is always traditionally accurate (rule engine) while the narrative is always deeply personal and empathetic (LLM).
 
-    Client -- Mood + Time --> RuleEngine
-    DB -- Ragas --> RuleEngine
-    RuleEngine -- Top 5 Candidates --> Gemini
-    Gemini -- Recommendation + Ritual --> Client
-    Client -- Reflection --> Gemini
-    Gemini -- Summary + Memory --> Client
+## Architecture
+```text
+User Opens App
+       │
+       ▼
+[ Mood Check-in ] (Overwhelmed, Calm, Anxious, Focus...)
+       │
+       ▼
+[ Hybrid Recommendation Engine ]
+   ↳ Rule Engine: Filters by Prahar & Thaat
+   ↳ Gemini: Selects #1 Raga + Generates "Why" + Designs Ritual
+       │
+       ▼
+[ Recommendation Experience ] (Explainable AI)
+       │
+       ▼
+[ Ritual View ] (Guided Timer)
+  1. Close eyes (2 min)
+  2. Listen (15 min)
+  3. Reflect (5 min)
+       │
+       ▼
+[ AI Memory ] (Gemini summarizes reflection for tomorrow)
 ```
 
-### The Hybrid Pipeline
-1. **Rule Engine (Fast & Reliable):** Filters ragas by current solar time (Prahar/Sandhi Prakash) and scores them based on the user's MBTI temperament.
-2. **Gemini (Poetic & Contextual):** Takes the top candidates, selects the most appropriate one based on the user's *current mood*, and generates a guided listening ritual.
+## Setup Instructions
 
-This guarantees reliability (time calculations never hallucinate) while providing deeply personalized explanations.
-
-## 🚀 Features
-- **Circadian Awareness:** Calculates precise solar times (dawn/dusk transitions) based on user geolocation.
-- **Emotionally Intelligent Onboarding:** Starts with how you feel, not a search bar.
-- **Explainable AI:** Transparent confidence scores and "Why?" bullets for every recommendation.
-- **AI Memory Timeline:** Remembers your reflections and surfaces patterns in your listening journey.
-- **Demo Mode:** A cinematic, fail-safe offline mode for presentations.
-
-## 🛠 Tech Stack
-- **Frontend:** React 18, Vite, Framer Motion, CSS Variables
-- **Backend:** Node.js, Express, Mongoose, Helmet (Security)
-- **AI/LLM:** Google Generative AI (Gemini 2.5 Flash)
-- **Database:** MongoDB
-
-## 📦 Setup & Installation
-
-1. **Clone & Install**
-   ```bash
-   git clone <repo>
-   cd personalmusic
-   npm run install:all # (or npm install in both /client and /server)
-   ```
-
-2. **Environment Variables (`server/.env`)**
+1. **Clone the repository**
+2. **Environment Variables**
+   Create a `.env` in the `/server` folder:
    ```env
-   PORT=5000
-   MONGO_URI=mongodb://localhost:27017/ragachakra
    GEMINI_API_KEY=your_key_here
-   CLIENT_ORIGIN=http://localhost:5173
+   PORT=5000
+   NODE_ENV=development
    ```
-
-3. **Run Services**
+3. **Install Dependencies**
    ```bash
-   # Terminal 1 (Backend)
-   cd server
-   npm run dev
-
-   # Terminal 2 (Frontend)
-   cd client
-   npm run dev
+   cd server && npm install
+   cd ../client && npm install
+   ```
+4. **Run the App**
+   ```bash
+   # Terminal 1
+   cd server && npm run dev
+   
+   # Terminal 2
+   cd client && npm run dev
    ```
 
-## 🔒 Security & Performance
-- **Helmet** for HTTP header hardening.
-- **Express-Rate-Limit** (tiered: 60/min standard, 10/min AI endpoints).
-- **Express-Validator** for input sanitization.
-- Graceful degradation: If MongoDB is down, the server returns 503 and the client falls back to `demoData.js`. If Gemini times out, the backend falls back to deterministic rule-engine reasoning.
+## Presenter Mode (For Judges)
+Press `Ctrl + Shift + D` or append `?judge=true` to the URL. This enables Judge Mode, which instantly bypasses onboarding and loads a pre-baked, flawless demonstration flow perfect for a 3-minute pitch.
+
+## Future Roadmap
+- Integration with Spotify/Apple Music APIs.
+- Generative ambient tanpura drones using the Web Audio API.
+- Sleep phase tracking for midnight/dawn raga transitions.
