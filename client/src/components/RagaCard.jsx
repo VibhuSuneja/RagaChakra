@@ -122,7 +122,8 @@ export default function RagaCard({ raga, score, reasoning, isHero, index = 0 }) 
                   
                   const clientId = localStorage.getItem('ragachakra_client_id') || 'temp-id';
                   const mbti = localStorage.getItem('ragachakra_mbti') || 'User';
-                  const url = `/api/raga/ai/explain?ragaName=${encodeURIComponent(raga.name)}&mbti=${encodeURIComponent(mbti)}&timeLabel=this%20prahar`;
+                  const baseUrl = import.meta.env.VITE_API_URL || '';
+                  const url = `${baseUrl}/api/raga/ai/explain?ragaName=${encodeURIComponent(raga.name)}&mbti=${encodeURIComponent(mbti)}&timeLabel=this%20prahar`;
                   
                   const source = new EventSource(url);
                   source.onmessage = (event) => {

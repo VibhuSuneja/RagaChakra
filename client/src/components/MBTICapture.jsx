@@ -97,7 +97,8 @@ export default function MBTICapture({ onSave }) {
     localStorage.setItem('ragachakra_mbti', mbti);
     localStorage.setItem('ragachakra_client_id', cid);
 
-    fetch('/api/mbti', {
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    fetch(`${baseUrl}/api/mbti`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       // keepalive: true ensures request completes even after navigate() fires

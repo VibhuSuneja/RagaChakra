@@ -17,7 +17,8 @@ export default function RagaDetail() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/raga/${id}`)
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    fetch(`${baseUrl}/api/raga/${id}`)
       .then(res => {
         if (!res.ok) {
           throw new Error('Raga details not found on server.');
