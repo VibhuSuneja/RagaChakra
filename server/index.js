@@ -51,14 +51,21 @@ app.use('/api/*', (_req, res) => {
   res.status(404).json({ error: 'API route not found.' });
 });
 
-// ── Serve frontend in production ──────────────────────────────────────────
-// Serve the built Vite frontend directly from the Node server.
-// This allows for a single, easy deployment on Render (Monolith architecture).
-const path = require('path');
-app.use(express.static(path.join(__dirname, '../client/dist')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
-});
+// ── Serve frontend in production (DISABLED) ─────────────────────────────────
+// Since the frontend is hosted separately on Vercel, the backend should only act as an API.
+// If you want Render to also host the frontend, change this back to serve ../client/dist
+if (process.env.SERVE_FRONTEND === 'true') {
+  const path = require('path');
+  app.use(express.static(path.join(__dirname, '../client/dist')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+  });
+} else {
+  // If not serving frontend, unhandled routes get a clean JSON 404
+  app.get('*', (req, res) => {
+    res.status(404).json({ error: 'RagaChakra API. Route not found. Visit the Vercel frontend.' });
+  });
+}
 
 // ── Start Express immediately (no waiting for DB) ─────────────────────────
 app.listen(PORT, () => {
