@@ -17,7 +17,8 @@ export default function RagaDetail() {
 
   useEffect(() => {
     setLoading(true);
-    const baseUrl = import.meta.env.VITE_API_URL || '';
+    const rawBaseUrl = import.meta.env.VITE_API_URL || '';
+    const baseUrl = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
     fetch(`${baseUrl}/api/raga/${id}`)
       .then(res => {
         if (!res.ok) {

@@ -97,7 +97,8 @@ export default function MBTICapture({ onSave }) {
     localStorage.setItem('ragachakra_mbti', mbti);
     localStorage.setItem('ragachakra_client_id', cid);
 
-    const baseUrl = import.meta.env.VITE_API_URL || '';
+    const rawBaseUrl = import.meta.env.VITE_API_URL || '';
+    const baseUrl = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
     fetch(`${baseUrl}/api/mbti`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

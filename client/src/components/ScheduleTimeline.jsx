@@ -7,7 +7,8 @@ export default function ScheduleTimeline({ currentPraharIndex }) {
 
   useEffect(() => {
     const clientId = localStorage.getItem('ragachakra_client_id') || 'temp-id';
-    const baseUrl = import.meta.env.VITE_API_URL || '';
+    const rawBaseUrl = import.meta.env.VITE_API_URL || '';
+    const baseUrl = rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
     fetch(`${baseUrl}/api/raga/schedule/daily?clientId=${clientId}`)
       .then(res => res.json())
       .then(data => {
