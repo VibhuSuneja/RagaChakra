@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ShareInsightModal from './ShareInsightModal';
 
-export default function RagaCard({ raga, score, reasoning, isHero, index = 0 }) {
+export default function RagaCard({ raga, score, reasoning, isHero, index = 0, recommendationFull }) {
   const [showInsight, setShowInsight] = useState(false);
   const [aiExplanation, setAiExplanation] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -193,6 +193,7 @@ export default function RagaCard({ raga, score, reasoning, isHero, index = 0 }) 
           )}
           <Link 
             to={`/raga/${raga._id}`} 
+            state={{ recommendation: recommendationFull || { raga, score, reasoning } }} 
             style={{ 
               color: 'var(--color-accent)', 
               fontWeight: '600', 

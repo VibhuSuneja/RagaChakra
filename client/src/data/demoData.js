@@ -34,7 +34,7 @@ export const DEMO_SCENARIOS = {
         ascendingNotes: "S R G M# P D N S'",
         descendingNotes: "S' N D P M# G R S",
         isSandhiPrakash: false,
-        audioRefs: ['https://www.youtube.com/results?search_query=raga+yaman+classical'],
+        audioRefs: ['https://www.youtube.com/embed/T6hC9qg_BTo'], // Embeddable Yaman performance
       },
       confidence: 92,
       whyBullets: [
@@ -86,7 +86,7 @@ export const DEMO_SCENARIOS = {
         descendingNotes: "S' N d P M G r S",
         isSandhiPrakash: true,
         sandhiType: 'dawn',
-        audioRefs: ['https://www.youtube.com/results?search_query=raga+bhairav+morning'],
+        audioRefs: ['https://www.youtube.com/embed/7VnJ3-O_YgQ'], // Embeddable Bhairav performance
       },
       confidence: 96,
       whyBullets: [
@@ -128,7 +128,7 @@ export const DEMO_SCENARIOS = {
         ascendingNotes: 'S g M d n S',
         descendingNotes: "S' n d M g S",
         isSandhiPrakash: false,
-        audioRefs: ['https://www.youtube.com/results?search_query=raga+malkauns+classical'],
+        audioRefs: ['https://www.youtube.com/embed/BvHhWv_b6Yc'], // Embeddable Malkauns performance
       },
       confidence: 88,
       whyBullets: [

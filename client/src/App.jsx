@@ -1,8 +1,9 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Onboarding from './features/Onboarding';
 import RagaDetail from './components/RagaDetail';
 import Dashboard from './features/Dashboard';
+import RitualView from './features/RitualView';
 import { UserProvider, useUser } from './context/UserContext';
 
 // Route Guard to verify user has completed onboarding
@@ -12,6 +13,46 @@ function RequireOnboarding({ children }) {
     return <Navigate to="/onboarding" replace />;
   }
   return children;
+}
+
+// Hidden Judge Mode Enabler
+function JudgeModeEnabler() {
+  const { setUserName, setMood, setMbti, completeOnboarding, setIsDemoMode } = useUser();
+  const navigate = useNavigate();
+  const location = window.location; // using window since useLocation might be slow to setup
+
+  const activateJudgeMode = React.useCallback(() => {
+    console.log("🏆 Judge Mode Activated!");
+    setUserName('Judge');
+    setMood('overwhelmed');
+    setMbti('INFP');
+    completeOnboarding();
+    setIsDemoMode(true);
+    navigate('/');
+  }, [setUserName, setMood, setMbti, completeOnboarding, setIsDemoMode, navigate]);
+
+  React.useEffect(() => {
+    // 1. Check URL param ?judge=true
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('judge') === 'true') {
+      activateJudgeMode();
+      // Clean up URL so it doesn't trigger again
+      window.history.replaceState({}, document.title, "/");
+    }
+
+    // 2. Global hotkey listener (Ctrl + Shift + D)
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        activateJudgeMode();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activateJudgeMode]);
+
+  return null;
 }
 
 class ErrorBoundary extends React.Component {
@@ -46,6 +87,7 @@ function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <UserProvider>
+          <JudgeModeEnabler />
           <Routes>
             <Route 
               path="/" 
@@ -61,6 +103,14 @@ function App() {
               element={
                 <RequireOnboarding>
                   <RagaDetail />
+                </RequireOnboarding>
+              } 
+            />
+            <Route 
+              path="/ritual" 
+              element={
+                <RequireOnboarding>
+                  <RitualView />
                 </RequireOnboarding>
               } 
             />
