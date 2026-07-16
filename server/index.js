@@ -2,7 +2,11 @@ require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') }
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
+
+const { standardLimiter } = require('./middleware/rateLimiter');
+const { requireDb, setDbConnected } = require('./middleware/dbGuard');
 
 const mbtiRoutes = require('./routes/mbti');
 const ragaRoutes = require('./routes/raga');
@@ -11,49 +15,34 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ragachakra';
 
-let dbConnected = false;
-
-// ── Middleware ────────────────────────────────────────────────────────────
+// ── Security Middleware ───────────────────────────────────────────────────
+app.use(helmet());
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   credentials: true,
 }));
-app.use(express.json());
-
-// ── DB Health Guard ───────────────────────────────────────────────────────
-// Routes that need MongoDB return 503 gracefully when DB is unavailable.
-// This prevents the client from receiving a hanging connection refused error.
-const requireDb = (req, res, next) => {
-  if (!dbConnected) {
-    return res.status(503).json({
-      error: 'Database unavailable. The app works in offline/demo mode.',
-      offlineMode: true,
-    });
-  }
-  next();
-};
+app.use(express.json({ limit: '10kb' })); // Prevent oversized payloads
+app.use(standardLimiter); // 60 req/min standard rate limit
 
 // ── Routes ────────────────────────────────────────────────────────────────
 app.use('/api/mbti', requireDb, mbtiRoutes);
 app.use('/api/raga', requireDb, ragaRoutes);
 
-// Health check — always responds regardless of DB state
+// ── Health check — always responds regardless of DB state ─────────────────
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
-    db: dbConnected ? 'connected' : 'disconnected',
+    db: require('./middleware/dbGuard').getDbConnected() ? 'connected' : 'disconnected',
     timestamp: new Date().toISOString(),
   });
 });
 
-// 404 catch-all for /api routes
+// ── 404 catch-all for /api routes ────────────────────────────────────────
 app.use('/api/*', (_req, res) => {
   res.status(404).json({ error: 'API route not found.' });
 });
 
-// ── Serve frontend in production (DISABLED) ─────────────────────────────────
-// Since the frontend is hosted separately on Vercel, the backend should only act as an API.
-// If you want Render to also host the frontend, change this back to serve ../client/dist
+// ── Serve frontend in production (optional) ──────────────────────────────
 if (process.env.SERVE_FRONTEND === 'true') {
   const path = require('path');
   app.use(express.static(path.join(__dirname, '../client/dist')));
@@ -61,31 +50,28 @@ if (process.env.SERVE_FRONTEND === 'true') {
     res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
   });
 } else {
-  // If not serving frontend, unhandled routes get a clean JSON 404
   app.get('*', (req, res) => {
-    res.status(404).json({ error: 'RagaChakra API. Route not found. Visit the Vercel frontend.' });
+    res.status(404).json({ error: 'RagaChakra API — visit the Vercel frontend.' });
   });
 }
 
-// ── Start Express immediately (no waiting for DB) ─────────────────────────
+// ── Start Express immediately (DB connects in background) ─────────────────
 app.listen(PORT, () => {
-  console.log(`\n🎵 RagaChakra server`);
-  console.log(`   Express: http://localhost:${PORT}`);
-  console.log(`   DB:      connecting in background...`);
-  console.log(`   Astrology feature flag: ${process.env.ASTRO_ENABLED === 'true' ? 'ON' : 'OFF (MVP)'}\n`);
+  console.log(`\n🎵 RagaChakra`);
+  console.log(`   Express:  http://localhost:${PORT}`);
+  console.log(`   DB:       connecting in background...`);
+  console.log(`   Astrology: ${process.env.ASTRO_ENABLED === 'true' ? 'ON' : 'OFF (MVP)'}\n`);
 });
 
 // ── Connect MongoDB in background ─────────────────────────────────────────
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    dbConnected = true;
+    setDbConnected(true);
     console.log(`   MongoDB: ✅ connected\n`);
   })
   .catch((err) => {
-    dbConnected = false;
+    setDbConnected(false);
     console.warn(`   MongoDB: ⚠️  unavailable — ${err.message}`);
     console.warn(`   Running in offline/demo mode. Client fallback data is active.\n`);
-    // Do NOT exit — server stays alive for the client to use
   });
-

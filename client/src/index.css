@@ -1,4 +1,7 @@
-/* Design System CSS Variables */
+@import './styles/theme.css';
+@import './styles/components.css';
+
+/* Design System CSS Variables (Legacy - will be phased out) */
 :root {
   --color-bg: #0D0B2B;
   --color-accent: #E8890C;

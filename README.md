@@ -1,44 +1,79 @@
 # RagaChakra
 
-Circadian Hindustani raga recommendation engine.
+> **An AI Ritual Companion for Indian Classical Music.**
 
-## Overview
-RagaChakra is a modern web application that recommends Hindustani ragas based on the current time of day (Prahar) and the user's Myers-Briggs Type Indicator (MBTI). The application uses the user's geolocation and local time to suggest the most appropriate raga for their current setting, enhancing the listening experience by aligning the music with the natural circadian rhythms.
+RagaChakra is a time-aware, emotionally intelligent companion that helps users discover the right raga at the exact right moment. It uses a **Hybrid AI Architecture** to combine the deterministic precision of classical music theory (Prahars, Thaats, Rasa) with the poetic, contextual reasoning of LLMs.
 
-## Architecture
-- **Frontend**: React application built with Vite, utilizing React Router for navigation.
-- **Styling**: Custom dark-mode design system featuring glassmorphic cards, and beautiful typography (Playfair Display and Inter).
-- **Backend**: Express.js server providing a robust API for raga recommendations.
-- **State Management**: MBTI types are persisted via `localStorage`, while geolocation is fetched dynamically with fallbacks.
+This is not a music player. It is a guide to listening rituals.
 
-## Features
-- **MBTI Capture**: Captures the user's MBTI type to personalize recommendations.
-- **Geolocation Integration**: Automatically detects the user's timezone and coordinates (with an `ipapi.co` fallback) to accurately determine the current Prahar (time of day).
-- **Interactive Prahar Clock**: A visual circular clock displaying the current time and raga period.
-- **Raga Detail View**: Displays detailed information about ragas, including notes, thaat, rasa, and audio references.
+## 🏗 Architecture
 
-## Getting Started
+```mermaid
+graph TD
+    Client[Client React App]
+    subgraph Server [Node.js / Express]
+        RuleEngine[Rule Engine\nprahar.js + ranking.js]
+        Gemini[Gemini 2.5 Flash]
+    end
+    DB[(MongoDB)]
 
-### Prerequisites
-- Node.js (v18 or higher recommended)
-- npm
+    Client -- Mood + Time --> RuleEngine
+    DB -- Ragas --> RuleEngine
+    RuleEngine -- Top 5 Candidates --> Gemini
+    Gemini -- Recommendation + Ritual --> Client
+    Client -- Reflection --> Gemini
+    Gemini -- Summary + Memory --> Client
+```
 
-### Installation
+### The Hybrid Pipeline
+1. **Rule Engine (Fast & Reliable):** Filters ragas by current solar time (Prahar/Sandhi Prakash) and scores them based on the user's MBTI temperament.
+2. **Gemini (Poetic & Contextual):** Takes the top candidates, selects the most appropriate one based on the user's *current mood*, and generates a guided listening ritual.
 
-1. Install all dependencies for both the client and server:
+This guarantees reliability (time calculations never hallucinate) while providing deeply personalized explanations.
+
+## 🚀 Features
+- **Circadian Awareness:** Calculates precise solar times (dawn/dusk transitions) based on user geolocation.
+- **Emotionally Intelligent Onboarding:** Starts with how you feel, not a search bar.
+- **Explainable AI:** Transparent confidence scores and "Why?" bullets for every recommendation.
+- **AI Memory Timeline:** Remembers your reflections and surfaces patterns in your listening journey.
+- **Demo Mode:** A cinematic, fail-safe offline mode for presentations.
+
+## 🛠 Tech Stack
+- **Frontend:** React 18, Vite, Framer Motion, CSS Variables
+- **Backend:** Node.js, Express, Mongoose, Helmet (Security)
+- **AI/LLM:** Google Generative AI (Gemini 2.5 Flash)
+- **Database:** MongoDB
+
+## 📦 Setup & Installation
+
+1. **Clone & Install**
    ```bash
-   npm run install:all
+   git clone <repo>
+   cd personalmusic
+   npm run install:all # (or npm install in both /client and /server)
    ```
 
-2. Start the development environment (runs both client and server concurrently):
+2. **Environment Variables (`server/.env`)**
+   ```env
+   PORT=5000
+   MONGO_URI=mongodb://localhost:27017/ragachakra
+   GEMINI_API_KEY=your_key_here
+   CLIENT_ORIGIN=http://localhost:5173
+   ```
+
+3. **Run Services**
    ```bash
+   # Terminal 1 (Backend)
+   cd server
+   npm run dev
+
+   # Terminal 2 (Frontend)
+   cd client
    npm run dev
    ```
 
-## Available Scripts
-
-- `npm run dev`: Starts both the client and server concurrently.
-- `npm start`: Starts the Express backend server.
-- `npm run build`: Builds the React frontend for production.
-- `npm run seed`: Seeds the database/backend with initial raga data.
-- `npm test`: Runs the backend test suite.
+## 🔒 Security & Performance
+- **Helmet** for HTTP header hardening.
+- **Express-Rate-Limit** (tiered: 60/min standard, 10/min AI endpoints).
+- **Express-Validator** for input sanitization.
+- Graceful degradation: If MongoDB is down, the server returns 503 and the client falls back to `demoData.js`. If Gemini times out, the backend falls back to deterministic rule-engine reasoning.

@@ -1,20 +1,15 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import MBTICapture from './components/MBTICapture';
+import Onboarding from './features/Onboarding';
 import RagaDetail from './components/RagaDetail';
 import Dashboard from './features/Dashboard';
 import { UserProvider, useUser } from './context/UserContext';
 
-const VALID_MBTI_TYPES = [
-  'ISTJ', 'ISFJ', 'INFJ', 'INTJ', 'ISTP', 'ISFP', 'INFP', 'INTP',
-  'ESTP', 'ESFP', 'ENFP', 'ENTP', 'ESTJ', 'ESFJ', 'ENFJ', 'ENTJ'
-];
-
-// Route Guard to verify user has MBTI stored
-function RequireMBTI({ children }) {
-  const { mbti } = useUser();
-  if (!mbti || !VALID_MBTI_TYPES.includes(mbti.toUpperCase())) {
-    return <Navigate to="/mbti" replace />;
+// Route Guard to verify user has completed onboarding
+function RequireOnboarding({ children }) {
+  const { onboardingComplete } = useUser();
+  if (!onboardingComplete) {
+    return <Navigate to="/onboarding" replace />;
   }
   return children;
 }
@@ -55,18 +50,18 @@ function App() {
             <Route 
               path="/" 
               element={
-                <RequireMBTI>
+                <RequireOnboarding>
                   <Dashboard />
-                </RequireMBTI>
+                </RequireOnboarding>
               } 
             />
-            <Route path="/mbti" element={<MBTICapture />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route 
               path="/raga/:id" 
               element={
-                <RequireMBTI>
+                <RequireOnboarding>
                   <RagaDetail />
-                </RequireMBTI>
+                </RequireOnboarding>
               } 
             />
             <Route path="*" element={<Navigate to="/" replace />} />

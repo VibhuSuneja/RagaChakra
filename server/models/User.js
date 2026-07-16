@@ -48,11 +48,18 @@ const UserSchema = new mongoose.Schema(
       lagna:     { type: String, default: null },  // Ascendant sign
     },
 
-    // Lightweight listening history for future personalisation (not used in MVP ranking)
+    // Current mood — set on each recommendation request
+    currentMood: { type: String, default: null },
+
+    // Listening history — enriched with mood, reflection, and AI summary
     listeningHistory: [
       {
-        ragaId:     { type: mongoose.Schema.Types.ObjectId, ref: 'Raga' },
-        listenedAt: { type: Date, default: Date.now },
+        ragaId:         { type: mongoose.Schema.Types.ObjectId, ref: 'Raga' },
+        ragaName:       { type: String, default: null },
+        mood:           { type: String, default: null },
+        reflectionText: { type: String, default: '' },
+        aiSummary:      { type: String, default: '' },
+        listenedAt:     { type: Date, default: Date.now },
       },
     ],
   },
