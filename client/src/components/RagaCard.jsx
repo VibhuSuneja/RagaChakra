@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import ShareInsightModal from './ShareInsightModal';
 
-export default function RagaCard({ raga, score, reasoning, isHero }) {
+export default function RagaCard({ raga, score, reasoning, isHero, index = 0 }) {
+  const [showInsight, setShowInsight] = useState(false);
+  const [aiExplanation, setAiExplanation] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+
   if (!raga) return null;
 
   // Format prahar display (e.g., [1, 2] -> "Prahar 1, 2")
@@ -15,7 +21,11 @@ export default function RagaCard({ raga, score, reasoning, isHero }) {
   const matchPercentage = Math.round(score * 100);
 
   return (
-    <div 
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.15 }}
+      whileHover={{ y: -8, scale: 1.02, boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)' }}
       className={`glass-card hover-scale ${isHero ? 'hero-raga-card' : ''}`}
       style={{ 
         padding: isHero ? '2rem' : '1.25rem', 
@@ -101,20 +111,135 @@ export default function RagaCard({ raga, score, reasoning, isHero }) {
         <div style={{ fontSize: '0.85rem', fontFamily: 'monospace' }} className="text-muted">
           Aroha: {raga.ascendingNotes || 'S R G M...'}
         </div>
-        <Link 
-          to={`/raga/${raga._id}`} 
-          style={{ 
-            color: 'var(--color-accent)', 
-            fontWeight: '600', 
-            fontSize: '0.9rem', 
-            display: 'inline-flex', 
-            alignItems: 'center',
-            gap: '4px' 
-          }}
-        >
-          View Details <span>→</span>
-        </Link>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {isHero && (
+            <>
+              <button 
+                onClick={() => {
+                  if (aiExplanation) return;
+                  setAiLoading(true);
+                  setAiExplanation('');
+                  
+                  const clientId = localStorage.getItem('ragachakra_client_id') || 'temp-id';
+                  const mbti = localStorage.getItem('ragachakra_mbti') || 'User';
+                  const url = `/api/raga/ai/explain?ragaName=${encodeURIComponent(raga.name)}&mbti=${encodeURIComponent(mbti)}&timeLabel=this%20prahar`;
+                  
+                  const source = new EventSource(url);
+                  source.onmessage = (event) => {
+                    if (event.data === '[DONE]') {
+                      source.close();
+                      setAiLoading(false);
+                      return;
+                    }
+                    try {
+                      const data = JSON.parse(event.data);
+                      if (data.error) {
+                        setAiExplanation(data.error);
+                        source.close();
+                        setAiLoading(false);
+                      } else if (data.text) {
+                        setAiExplanation((prev) => prev + data.text);
+                      }
+                    } catch (e) {
+                      console.error('Error parsing SSE', e);
+                    }
+                  };
+                  source.onerror = (e) => {
+                    console.error('SSE Error', e);
+                    source.close();
+                    setAiLoading(false);
+                  };
+                }}
+                disabled={aiLoading || !!aiExplanation}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(232, 137, 12, 0.2) 100%)',
+                  border: '1px solid rgba(168, 85, 247, 0.4)',
+                  color: '#fff',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold',
+                  cursor: (aiLoading || !!aiExplanation) ? 'default' : 'pointer',
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  opacity: (aiLoading || !!aiExplanation) ? 0.6 : 1
+                }}
+              >
+                ✨ Why this Raga?
+              </button>
+              <button 
+                onClick={() => setShowInsight(true)}
+                style={{
+                  background: 'rgba(232, 137, 12, 0.1)',
+                  border: '1px solid rgba(232, 137, 12, 0.4)',
+                  color: 'var(--color-accent)',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s'
+                }}
+                onMouseOver={(e) => e.target.style.background = 'rgba(232, 137, 12, 0.2)'}
+                onMouseOut={(e) => e.target.style.background = 'rgba(232, 137, 12, 0.1)'}
+              >
+                Share Insight
+              </button>
+            </>
+          )}
+          <Link 
+            to={`/raga/${raga._id}`} 
+            style={{ 
+              color: 'var(--color-accent)', 
+              fontWeight: '600', 
+              fontSize: '0.9rem', 
+              display: 'inline-flex', 
+              alignItems: 'center',
+              gap: '4px' 
+            }}
+          >
+            View Details <span>→</span>
+          </Link>
+        </div>
       </div>
-    </div>
+      
+      <AnimatePresence>
+        {(aiExplanation || aiLoading) && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            style={{
+              marginTop: '0.5rem',
+              padding: '1rem',
+              background: 'rgba(168, 85, 247, 0.1)',
+              border: '1px solid rgba(168, 85, 247, 0.3)',
+              borderRadius: '8px',
+              color: '#fff',
+              fontSize: '0.95rem',
+              lineHeight: '1.5',
+              fontStyle: 'italic'
+            }}
+          >
+            <span style={{ fontWeight: 'bold', color: '#e8890c', fontStyle: 'normal', marginRight: '8px' }}>✨ Gemini Says:</span>
+            {aiExplanation}
+            {aiLoading && <span style={{ display: 'inline-block', width: '8px', height: '14px', background: '#e8890c', marginLeft: '4px', animation: 'blink 1s step-end infinite' }} />}
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
+      <AnimatePresence>
+        {showInsight && (
+          <ShareInsightModal 
+            raga={raga} 
+            matchPercentage={matchPercentage} 
+            reasoning={reasoning} 
+            onClose={() => setShowInsight(false)} 
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

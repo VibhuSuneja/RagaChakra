@@ -127,16 +127,55 @@ function buildReasoning(raga, ctx, mbtiType) {
   const { isSandhi, sandhiType, praharName } = ctx;
 
   const timeLabel = isSandhi
-    ? `${sandhiType === 'dawn' ? 'Dawn' : 'Dusk'} — Sandhi Prakash`
-    : praharName;
+    ? `${sandhiType === 'dawn' ? 'dawn' : 'dusk'} — Sandhi Prakash`
+    : praharName.toLowerCase();
 
-  if (!mbtiType) return timeLabel;
+  if (!mbtiType) {
+    return `${raga.name} is a classical raga of ${raga.thaat} thaat, traditionally performed during ${timeLabel}.`;
+  }
 
   const temperament = getTemperament(mbtiType);
-  const temperamentNames = { NT: 'Rational', NF: 'Idealist', SJ: 'Guardian', SP: 'Artisan' };
-  const rasaStr = raga.rasa.join(', ');
+  const temperamentNames = {
+    NT: 'Rational',
+    NF: 'Idealist',
+    SJ: 'Guardian',
+    SP: 'Artisan',
+  };
 
-  return `${timeLabel} · ${mbtiType} (${temperamentNames[temperament]}) → ${rasaStr}`;
+  const temperamentDesc = {
+    NT: 'your analytical drive and love of complexity',
+    NF: 'your depth of feeling and search for meaning',
+    SJ: 'your sense of order, duty, and calm',
+    SP: 'your spontaneous energy and love of experience',
+  };
+
+  const rasaDesc = {
+    Shringara: 'romantic and devotional beauty',
+    Karuna: 'deep compassion and melancholic reflection',
+    Shanta: 'profound inner peace and stillness',
+    Veera: 'heroic resolve and dignified strength',
+    Adbhuta: 'wonder and a sense of the extraordinary',
+    Hasya: 'lightness, joy, and playful energy',
+    Bhayanak: 'awe, gravity, and cosmic mystery',
+    Raudra: 'fierce intensity and passionate expression',
+    Bibhatsa: 'raw, unfiltered emotional truth',
+  };
+
+  // Pick the most relevant rasa for this MBTI
+  const { primary, secondary } = TEMPERAMENT_RASA[temperament];
+  const primaryRasa = raga.rasa.find(r => primary.includes(r))
+    || raga.rasa.find(r => secondary.includes(r))
+    || raga.rasa[0];
+
+  const rasaSentence = rasaDesc[primaryRasa]
+    ? `Its ${primaryRasa} quality — ${rasaDesc[primaryRasa]} — resonates with ${temperamentDesc[temperament]}.`
+    : `Its ${primaryRasa} quality resonates with ${temperamentDesc[temperament]}.`;
+
+  const timeSentence = isSandhi
+    ? `The ${sandhiType === 'dawn' ? 'dawn' : 'dusk'} Sandhi Prakash moment amplifies this raga's emotional depth.`
+    : `The ${timeLabel} is the ideal solar window for ${raga.thaat} thaat ragas.`;
+
+  return `As an ${mbtiType} ${temperamentNames[temperament]}, ${raga.name}'s ${primaryRasa} character aligns with ${temperamentDesc[temperament]}. ${timeSentence}`;
 }
 
 module.exports = { rankRagas, getTemperament, getRasaWeight, computeMbtiScore };

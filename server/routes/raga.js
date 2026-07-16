@@ -96,4 +96,80 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// ── GET /api/raga/schedule ────────────────────────────────────────────────
+router.get('/schedule/daily', async (req, res) => {
+  try {
+    const { clientId } = req.query;
+    
+    let mbtiType = null;
+    if (clientId) {
+      const user = await User.findOne({ clientId }).lean();
+      if (user) mbtiType = user.mbtiType || null;
+    }
+    
+    const allRagas = await Raga.find({}).lean();
+    const contexts = [
+      { praharIndex: 1, praharName: 'Pratham Prahar', isSandhi: false, sandhiType: null },
+      { praharIndex: 2, praharName: 'Dwitiya Prahar', isSandhi: false, sandhiType: null },
+      { praharIndex: 3, praharName: 'Tritiya Prahar', isSandhi: false, sandhiType: null },
+      { praharIndex: 4, praharName: 'Chaturthi Prahar', isSandhi: false, sandhiType: null },
+      { praharIndex: 5, praharName: 'Pancham Prahar', isSandhi: false, sandhiType: null },
+      { praharIndex: 6, praharName: 'Shashtham Prahar', isSandhi: false, sandhiType: null },
+      { praharIndex: 7, praharName: 'Saptam Prahar', isSandhi: false, sandhiType: null },
+      { praharIndex: 8, praharName: 'Ashtam Prahar', isSandhi: false, sandhiType: null },
+    ];
+    
+    const schedule = contexts.map(ctx => {
+      const recs = rankRagas(allRagas, ctx, mbtiType);
+      return {
+        prahar: ctx,
+        recommendation: recs.length > 0 ? recs[0] : null
+      };
+    });
+    
+    res.json({ schedule });
+  } catch (err) {
+    console.error('GET /api/raga/schedule error:', err);
+    res.status(500).json({ error: 'Server error computing schedule.' });
+  }
+});
+
+// ── GET /api/raga/ai/explain ──────────────────────────────────────────────
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+router.get('/ai/explain', async (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+
+  const { ragaName, mbti, timeLabel } = req.query;
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    res.write('data: ' + JSON.stringify({ error: 'Gemini API key not configured' }) + '\n\n');
+    return res.end();
+  }
+
+  try {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const prompt = `You are an expert in both Hindustani Classical Music and Jungian psychology. 
+Explain why the raga ${ragaName} is the perfect recommendation for an ${mbti} personality type during ${timeLabel}.
+Keep it poetic, insightful, and concise (max 3 sentences). Emphasize how the emotional quality (Rasa) of the raga matches the cognitive functions or temperament of the ${mbti}. Do NOT use markdown.`;
+
+    const result = await model.generateContentStream(prompt);
+
+    for await (const chunk of result.stream) {
+      const chunkText = chunk.text();
+      res.write('data: ' + JSON.stringify({ text: chunkText }) + '\n\n');
+    }
+    res.write('data: [DONE]\n\n');
+    res.end();
+  } catch (err) {
+    console.error('AI Explain error:', err);
+    res.write('data: ' + JSON.stringify({ error: 'Failed to generate explanation' }) + '\n\n');
+    res.end();
+  }
+});
+
 module.exports = router;

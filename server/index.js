@@ -11,6 +11,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/ragachakra';
 
+let dbConnected = false;
+
 // ── Middleware ────────────────────────────────────────────────────────────
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
@@ -18,13 +20,30 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// ── Routes ────────────────────────────────────────────────────────────────
-app.use('/api/mbti', mbtiRoutes);
-app.use('/api/raga', ragaRoutes);
+// ── DB Health Guard ───────────────────────────────────────────────────────
+// Routes that need MongoDB return 503 gracefully when DB is unavailable.
+// This prevents the client from receiving a hanging connection refused error.
+const requireDb = (req, res, next) => {
+  if (!dbConnected) {
+    return res.status(503).json({
+      error: 'Database unavailable. The app works in offline/demo mode.',
+      offlineMode: true,
+    });
+  }
+  next();
+};
 
-// Health check
+// ── Routes ────────────────────────────────────────────────────────────────
+app.use('/api/mbti', requireDb, mbtiRoutes);
+app.use('/api/raga', requireDb, ragaRoutes);
+
+// Health check — always responds regardless of DB state
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({
+    status: 'ok',
+    db: dbConnected ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // 404 catch-all for /api routes
@@ -35,27 +54,31 @@ app.use('/api/*', (_req, res) => {
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
   const path = require('path');
-  // Serve static files from the React app
   app.use(express.static(path.join(__dirname, '../client/dist')));
-
-  // All remaining requests return the React app, so it can handle routing
   app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
   });
 }
 
-// ── Database + Server ─────────────────────────────────────────────────────
+// ── Start Express immediately (no waiting for DB) ─────────────────────────
+app.listen(PORT, () => {
+  console.log(`\n🎵 RagaChakra server`);
+  console.log(`   Express: http://localhost:${PORT}`);
+  console.log(`   DB:      connecting in background...`);
+  console.log(`   Astrology feature flag: ${process.env.ASTRO_ENABLED === 'true' ? 'ON' : 'OFF (MVP)'}\n`);
+});
+
+// ── Connect MongoDB in background ─────────────────────────────────────────
 mongoose
   .connect(MONGO_URI)
   .then(() => {
-    console.log(`\n🎵 RagaChakra server`);
-    console.log(`   MongoDB: connected`);
-    app.listen(PORT, () => {
-      console.log(`   Express: http://localhost:${PORT}`);
-      console.log(`   Astrology feature flag: ${process.env.ASTRO_ENABLED === 'true' ? 'ON' : 'OFF (MVP)'}\n`);
-    });
+    dbConnected = true;
+    console.log(`   MongoDB: ✅ connected\n`);
   })
   .catch((err) => {
-    console.error('Failed to connect to MongoDB:', err.message);
-    process.exit(1);
+    dbConnected = false;
+    console.warn(`   MongoDB: ⚠️  unavailable — ${err.message}`);
+    console.warn(`   Running in offline/demo mode. Client fallback data is active.\n`);
+    // Do NOT exit — server stays alive for the client to use
   });
+

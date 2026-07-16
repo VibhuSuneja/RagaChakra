@@ -6,10 +6,10 @@
   --color-text-muted: #9B96B0;
   
   /* Glassmorphism */
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-blur: 12px;
-  --card-border: 1px solid rgba(255, 255, 255, 0.08);
-  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-blur: 24px;
+  --card-border: 1px solid rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
   
   /* Fonts */
   --font-headings: 'Playfair Display', serif;
@@ -28,7 +28,9 @@
 }
 
 body {
-  background-color: var(--color-bg);
+  background: linear-gradient(-45deg, #0D0B2B, #1A1344, #0a1128, #180524);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
   color: var(--color-text-primary);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -36,6 +38,12 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   line-height: 1.5;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Headings */
