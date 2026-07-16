@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 
 function generateUUID() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -73,8 +74,6 @@ const MBTI_DESCRIPTIONS = {
   ESFP: { name: 'The Entertainer', rasa: 'Hasya (Joy)', raga: 'Bilawal' },
 };
 
-import { useUser } from '../context/UserContext';
-
 export default function MBTICapture({ onSave }) {
   const navigate = useNavigate();
   const { setMbti } = useUser();
@@ -97,6 +96,7 @@ export default function MBTICapture({ onSave }) {
     if (!cid) {
       cid = generateUUID();
     }
+    console.log('Debug: Saving MBTI Profile:', mbti, 'Client ID:', cid);
     setMbti(mbti);
     localStorage.setItem('ragachakra_client_id', cid);
 
