@@ -1,4 +1,9 @@
-# RagaChakra
+# 🪷 RagaChakra
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Frontend: React](https://img.shields.io/badge/Frontend-React_18-blue.svg)](https://reactjs.org/)
+[![Backend: Node.js](https://img.shields.io/badge/Backend-Node.js-green.svg)](https://nodejs.org/)
+[![AI: Gemini](https://img.shields.io/badge/AI-Gemini_2.5_Flash-purple.svg)](https://deepmind.google/technologies/gemini/)
 
 > **An AI Ritual Companion for Indian Classical Music**
 
