@@ -35,3 +35,8 @@ Thumbs.db
 # Agent files
 .agents/
 .gemini/
+
+# IDE and Coverage
+.vscode/
+.idea/
+coverage/

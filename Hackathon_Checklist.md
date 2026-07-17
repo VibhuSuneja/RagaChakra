@@ -13,13 +13,13 @@
 - [ ] **Comprehensive README:** Must explain the project, how to run it locally, and the AI implementation.
 - [ ] **Pitch Deck (Optional but Recommended):** 5 to 7 slides covering the idea, market, and what's next.
 
-## 🧠 Project-Specific (Recall AI Coach) Checklist
-- [x] Implemented: Notes → smart quizzes
-- [x] Implemented: Adaptive difficulty
-- [x] Implemented: Weak-topic detection
-- [x] Implemented: 7-day revision plan
-- [ ] **Pending Core Feature:** Spaced repetition system
-- [ ] **Pending Core Feature:** Progress dashboard
+## 🧠 Project-Specific (RagaChakra) Checklist
+- [x] Implemented: MBTI & Mood Onboarding
+- [x] Implemented: Circadian (Prahar) awareness logic
+- [x] Implemented: Hybrid AI (Rules + LLM) pipeline
+- [x] Implemented: Raga Audio integrations
+- [ ] **Pending Core Feature:** UI/UX Polish and Bug Bash
+- [ ] **Pending Core Feature:** Presentation / Demo Script
 
 ## ⚖️ Judging Criteria Checks
 - [ ] **Originality:** Are we solving this in a fresh way (not just a ChatGPT wrapper)?
