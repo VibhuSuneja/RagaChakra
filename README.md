@@ -220,11 +220,11 @@ ragachakra/
 
 ## Demo
 
-<!-- Hosted URL Placeholder -->
-> **Live Demo**: [https://ragachakra-demo.example.com](#)
+> **Live Demo**: [RagaChakra Live App](https://personalmusic.vercel.app/onboarding)
 
-<!-- Demo Video Placeholder -->
-> **Demo Video**: [Watch on YouTube](#)
+> **Demo Video**: [Watch on YouTube](https://youtu.be/6r-41If4VGI)
+
+> **Pitch Deck**: [View Pitch Deck](https://www.genspark.ai/slides?project_id=5949eda2-accf-40fb-b01a-09a0a9041cc2)
 
 ---
 
